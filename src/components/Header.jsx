@@ -18,7 +18,7 @@ export default function Header() {
             <Nav.Link href="#destacados">Destacados</Nav.Link>
             <Nav.Link href="#nosotros">Nosotros</Nav.Link>
             <Nav.Link href="#contacto">Contacto</Nav.Link>
-            <Nav.Link as={Link} to="/login">Iniciar Sesión</Nav.Link>
+            <Nav.Link as={Link} to="/Login">Iniciar Sesión</Nav.Link>
             <Nav.Link as={Link} to="/carrito">
               🛒 Carrito <span className="badge bg-primary ms-1">0</span>
             </Nav.Link>

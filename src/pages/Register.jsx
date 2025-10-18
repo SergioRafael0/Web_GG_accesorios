@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import { Container, Row, Col, Form, Button, Card } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 
-export default function Login() {
+export default function Register() {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({ email: "", password: "" });
+  const [formData, setFormData] = useState({ name: "", email: "", password: "" });
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -12,11 +12,8 @@ export default function Login() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Aquí puedes añadir tu lógica de autenticación
-    if (formData.email && formData.password) {
-      console.log("Inicio de sesión:", formData);
-      navigate("/"); // redirige al home
-    }
+    console.log("Registro:", formData);
+    navigate("/login"); // redirige al login
   };
 
   return (
@@ -25,16 +22,27 @@ export default function Login() {
         <Col md={{ span: 6, offset: 3 }}>
           <Card className="bg-dark text-white shadow-lg border-secondary p-4">
             <Card.Body>
-              <h2 className="text-center mb-4 fw-bold">
-                Iniciar Sesión
-              </h2>
+              <h2 className="text-center mb-4 fw-bold">Registro</h2>
               <Form onSubmit={handleSubmit}>
+                <Form.Group className="mb-3" controlId="formName">
+                  <Form.Label>Nombre</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="name"
+                    placeholder="Tu nombre"
+                    value={formData.name}
+                    onChange={handleChange}
+                    required
+                    className="bg-dark text-white border-secondary"
+                  />
+                </Form.Group>
+
                 <Form.Group className="mb-3" controlId="formEmail">
-                  <Form.Label>Correo electrónico</Form.Label>
+                  <Form.Label>Email</Form.Label>
                   <Form.Control
                     type="email"
                     name="email"
-                    placeholder="Ingresa tu correo"
+                    placeholder="tu@correo.com"
                     value={formData.email}
                     onChange={handleChange}
                     required
@@ -61,14 +69,14 @@ export default function Login() {
                   className="w-100 py-2 fw-semibold"
                   style={{ backgroundColor: "#ff2d95", border: "none" }}
                 >
-                  Entrar
+                  Registrarse
                 </Button>
               </Form>
 
               <p className="text-center mt-3 text-white-50">
-                ¿No tienes una cuenta?{" "}
-                <a href="#" className="text-decoration-none text-info">
-                  Regístrate aquí
+                ¿Ya tienes cuenta?{" "}
+                <a href="/login" className="text-info text-decoration-none">
+                  Iniciar sesión
                 </a>
               </p>
             </Card.Body>
