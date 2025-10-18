@@ -11,6 +11,7 @@ import Footer from './components/Footer';
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./styles/styles.scss";
 
+
 /*<Route path="/checkout" element={<Checkout />} />
           <Route path="/success" element={<Success />} />
           <Route path="/failure" element={<Failure />} />
