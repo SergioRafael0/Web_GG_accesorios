@@ -1,0 +1,30 @@
+@import "bootswatch/dist/cyborg/_variables";
+@import "bootstrap/scss/bootstrap";
+@import "bootswatch/dist/cyborg/bootswatch";
+
+body {
+  font-family: 'Rubik', sans-serif;
+  background-color: #0b0c10;
+  color: #fff;
+}
+
+.navbar-brand {
+  font-family: 'Orbitron', sans-serif;
+  color: #ff2d95 !important;
+}
+
+.card {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: transform 0.2s ease;
+  &:hover {
+    transform: translateY(-5px);
+  }
+}
+
+.btn-primary {
+  background-color: #ff2d95;
+  border: none;
+  &:hover {
+    background-color: #ff50a8;
+  }
+}

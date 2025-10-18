@@ -1,0 +1,5 @@
+[
+  { "id": "teclados", "name": "Teclados" },
+  { "id": "audio", "name": "Auriculares" },
+  { "id": "sillas", "name": "Sillas" }
+]
