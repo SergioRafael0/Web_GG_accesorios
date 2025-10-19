@@ -1,23 +1,25 @@
 import React from "react";
 import { Table, Button } from "react-bootstrap";
 
-export default function ProductTable({ productos, onDelete }) {
+export default function EventTable({ eventos, onDelete }) {
   return (
     <Table striped bordered hover variant="dark">
       <thead>
         <tr>
+          <th>Tipo</th>
           <th>Nombre</th>
-          <th>Precio</th>
+          <th>Fecha</th>
           <th>Acciones</th>
         </tr>
       </thead>
       <tbody>
-        {productos.map((p) => (
-          <tr key={p.id}>
-            <td>{p.nombre}</td>
-            <td>${p.precio.toLocaleString("es-CL")}</td>
+        {eventos.map((e) => (
+          <tr key={e.id}>
+            <td>{e.tipo}</td>
+            <td>{e.nombre}</td>
+            <td>{e.fecha}</td>
             <td>
-              <Button variant="danger" size="sm" onClick={() => onDelete(p.id)}>
+              <Button variant="danger" size="sm" onClick={() => onDelete(e.id)}>
                 Eliminar
               </Button>
             </td>
