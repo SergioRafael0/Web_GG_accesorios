@@ -10,7 +10,7 @@ export default function Productos() {
 
   useEffect(() => {
     // Si colocaste products.json en /public/data/products.json usa fetch('/data/products.json')
-    fetch("/data/products.json")
+    fetch("/data/productos.json")
       .then((r) => r.json())
       .then((data) => {
         setProductos(data);

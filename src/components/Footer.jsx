@@ -15,10 +15,7 @@ export default function Footer() {
             Política de envío
           </Nav.Link>
           <Nav.Link href="#" className="text-white-50">
-            Términos
-          </Nav.Link>
-          <Nav.Link href="/carrito" className="text-white-50">
-            Carrito (0)
+            Términos y Condiciones
           </Nav.Link>
         </Nav>
       </Container>
