@@ -19,5 +19,6 @@ export function validarCoincidencia(valor1, valor2) {
 
 // Validar campos requeridos
 export function validarRequerido(valor) {
-  return valor.trim() !== "";
+  // Normalizar a string antes de trim para evitar errores cuando valor no es string
+  return String(valor || "").trim() !== "";
 }

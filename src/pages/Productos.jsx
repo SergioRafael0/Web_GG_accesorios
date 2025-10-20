@@ -1,25 +1,21 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Container, Row, Col, Form, InputGroup, Button } from "react-bootstrap";
 import ProductCard from "../components/ProductCard";
+import productos from "../data/productos.json";
+
+function groupByCategory(items) {
+  return items.reduce((acc, p) => {
+    (acc[p.categoria] = acc[p.categoria] || []).push(p);
+    return acc;
+  }, {});
+}
 
 export default function Productos() {
-  const [productos, setProductos] = useState([]);
   const [query, setQuery] = useState("");
   const [categoria, setCategoria] = useState("all");
-  const [categorias, setCategorias] = useState([]);
-
-  useEffect(() => {
-    // Si colocaste products.json en /public/data/products.json usa fetch('/data/products.json')
-    fetch("/data/productos.json")
-      .then((r) => r.json())
-      .then((data) => {
-        setProductos(data);
-        // extraer categorías únicas
-        const cats = Array.from(new Set(data.map((p) => p.categoria || "sin-categoria")));
-        setCategorias(cats);
-      })
-      .catch((err) => console.error("Error loading products:", err));
-  }, []);
+  // obtener categorías directamente del JSON importado
+  const categorias = Array.from(new Set(productos.map((p) => p.categoria || "sin-categoria")));
+  const byCat = groupByCategory(productos);
 
   const filtered = productos.filter((p) => {
     const matchQuery =
@@ -77,6 +73,20 @@ export default function Productos() {
           </Col>
         )}
       </Row>
+
+      <main className="container py-4">
+        <h2>Todos los productos</h2>
+        {Object.keys(byCat).map((cat) => (
+          <section key={cat} id={cat} className="products-category">
+            <h3>{cat}</h3>
+            <div className="product-grid">
+              {byCat[cat].map((p) => (
+                <ProductCard key={p.id} {...p} />
+              ))}
+            </div>
+          </section>
+        ))}
+      </main>
     </Container>
   );
 }

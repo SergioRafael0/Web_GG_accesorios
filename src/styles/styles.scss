@@ -251,3 +251,17 @@ input:focus,textarea:focus{outline:none;box-shadow:0 6px 18px rgba(0,0,0,0.6);bo
 
 /* Resaltado accesible al enfocar */
 :focus{outline:3px solid rgba(122,252,255,0.12);outline-offset:3px}
+
+/* Asegurar que la imagen hero se ajuste y no desborde */
+.hero-media {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.hero-media img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 12px;
+  object-fit: cover;
+}
