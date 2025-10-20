@@ -1,12 +1,28 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import ProductCard from "../components/ProductCard";
 import HeroCarousel from "../components/HeroCarousel";
-import productos from "../data/productos.json";
 import ContactForm from "../components/ContactForm";
 
 export default function Home() {
-  // usar directamente el JSON importado (está en src/data/productos.json)
+  const [productos, setProductos] = useState([]);
+  const [cargando, setCargando] = useState(true);
+
+  useEffect(() => {
+    fetch("/data/productos.json")
+      .then((res) => res.json())
+      .then((data) => setProductos(Array.isArray(data) ? data : []))
+      .catch((err) => {
+        console.error("Error cargando productos:", err);
+        setProductos([]);
+      })
+      .finally(() => setCargando(false));
+  }, []);
+
   const destacados = productos.slice(0, 4);
+
+  if (cargando) {
+    return <div className="container py-5 text-white">Cargando destacados...</div>;
+  }
 
   return (
     <div className="text-white">

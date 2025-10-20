@@ -10,7 +10,10 @@ import { Link } from "react-router-dom";
  */
 function resolveImagePath(imagen) {
   if (!imagen) return "/images/fallback.jpg";
-  if (imagen.startsWith("/")) return imagen; // public folder
+  if (imagen.startsWith("/")) {
+    // encodeURI para manejar espacios y caracteres especiales en nombres de archivo
+    return encodeURI(imagen);
+  }
   try {
     // Si guardas en src/assets/images, la siguiente línea genera la URL bundlera de Vite
     return new URL(`../assets/images/${imagen}`, import.meta.url).href;
