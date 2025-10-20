@@ -1,8 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { Container, Table, Form, Button, Row, Col } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import { validarCorreo, validarRequerido } from "../utils/validaciones";
-import regionesComunas from "../data/ComunasRegiones.json"; 
+import {
+  validarCorreo,
+  validarRequerido,
+  validarTarjeta,
+  validarExpiracion
+} from "../utils/validaciones";
+import regionesComunas from "../data/ComunasRegiones.json";
 
 export default function Checkout() {
   const [cart, setCart] = useState([]);
@@ -21,48 +26,53 @@ export default function Checkout() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const savedRaw = localStorage.getItem("cart") || "[]";
     let savedCart = [];
     try {
-      savedCart = JSON.parse(savedRaw);
+      savedCart = JSON.parse(localStorage.getItem("cart") || "[]");
+      savedCart = savedCart.map((it) => ({
+        ...it,
+        quantity: Number(it.quantity) || 1,
+      }));
     } catch {
       savedCart = [];
     }
-    // Normalizar quantity para evitar undefined o string
-    savedCart = savedCart.map((it) => ({ ...it, quantity: Number(it.quantity) || 1 }));
     setCart(savedCart);
   }, []);
-  
+
   const total = cart.reduce((sum, item) => sum + item.precio * item.quantity, 0);
-  
+
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
-  
+
   const handleCheckout = (e) => {
     e.preventDefault();
     const newErrors = {};
-  
-    // Validaciones
+
+    // Campos requeridos
     Object.keys(form).forEach((key) => {
       if (!validarRequerido(form[key])) newErrors[key] = "Campo obligatorio";
     });
-  
+
+    // Validación adicional
     if (form.email && !validarCorreo(form.email)) newErrors.email = "Correo inválido";
-    if (form.cardNumero && !/^\d{16}$/.test(form.cardNumero)) newErrors.cardNumero = "Número inválido";
-    if (form.cardCvv && !/^\d{3,4}$/.test(form.cardCvv)) newErrors.cardCvv = "CVV inválido";
-  
-    // Validar región y comuna
+    if (form.cardNumero && !validarTarjeta(form.cardNumero))
+      newErrors.cardNumero = "Número de tarjeta inválido";
+    if (form.cardExp && !validarExpiracion(form.cardExp))
+      newErrors.cardExp = "Fecha de expiración inválida";
+    if (form.cardCvv && !/^\d{3}$/.test(form.cardCvv)) newErrors.cardCvv = "CVV inválido";
+
+    // Región y comuna
     if (!validarRequerido(form.region)) newErrors.region = "Seleccione una región";
     if (!validarRequerido(form.comuna)) newErrors.comuna = "Seleccione una comuna";
-  
+
     setErrores(newErrors);
-  
+
     if (Object.keys(newErrors).length === 0) {
       localStorage.removeItem("cart");
       window.dispatchEvent(new Event("cartUpdated"));
       navigate("/success");
     }
   };
-  
+
   if (cart.length === 0) {
     return (
       <Container className="py-5">
@@ -71,11 +81,11 @@ export default function Checkout() {
       </Container>
     );
   }
-  
+
   return (
     <Container className="py-5">
       <h2 className="mb-4">Checkout</h2>
-  
+
       <Table striped bordered hover variant="dark" responsive>
         <thead>
           <tr>
@@ -96,12 +106,12 @@ export default function Checkout() {
           ))}
         </tbody>
       </Table>
-  
+
       <h4>Total: ${total.toLocaleString("es-CL")}</h4>
-  
+
       <Form className="mt-4" onSubmit={handleCheckout}>
         <h5>Datos del comprador</h5>
-  
+
         <Form.Group className="mb-3">
           <Form.Label>Nombre completo</Form.Label>
           <Form.Control
@@ -114,7 +124,7 @@ export default function Checkout() {
           />
           <Form.Control.Feedback type="invalid">{errores.nombre}</Form.Control.Feedback>
         </Form.Group>
-  
+
         <Form.Group className="mb-3">
           <Form.Label>Email</Form.Label>
           <Form.Control
@@ -127,7 +137,7 @@ export default function Checkout() {
           />
           <Form.Control.Feedback type="invalid">{errores.email}</Form.Control.Feedback>
         </Form.Group>
-  
+
         <Form.Group className="mb-3">
           <Form.Label>Dirección de envío</Form.Label>
           <Form.Control
@@ -140,8 +150,8 @@ export default function Checkout() {
           />
           <Form.Control.Feedback type="invalid">{errores.direccion}</Form.Control.Feedback>
         </Form.Group>
-  
-        {/* Select Región */}
+
+        {/* Región */}
         <Form.Group className="mb-3">
           <Form.Label>Región</Form.Label>
           <Form.Select
@@ -149,22 +159,20 @@ export default function Checkout() {
             value={form.region}
             onChange={(e) => {
               handleChange(e);
-              setForm((prev) => ({ ...prev, comuna: "" })); // reset comuna al cambiar región
+              setForm((prev) => ({ ...prev, comuna: "" }));
             }}
             isInvalid={!!errores.region}
             className="bg-dark text-white border-secondary"
           >
             <option value="">Seleccione una región</option>
             {regionesComunas.map((r) => (
-              <option key={r.region} value={r.region}>
-                {r.region}
-              </option>
+              <option key={r.region} value={r.region}>{r.region}</option>
             ))}
           </Form.Select>
           <Form.Control.Feedback type="invalid">{errores.region}</Form.Control.Feedback>
         </Form.Group>
-  
-        {/* Select Comuna */}
+
+        {/* Comuna */}
         <Form.Group className="mb-3">
           <Form.Label>Comuna</Form.Label>
           <Form.Select
@@ -176,18 +184,13 @@ export default function Checkout() {
             disabled={!form.region}
           >
             <option value="">Seleccione una comuna</option>
-            {form.region &&
-              regionesComunas
-                .find((r) => r.region === form.region)
-                .comunas.map((c) => (
-                  <option key={c} value={c}>
-                    {c}
-                  </option>
-                ))}
+            {form.region && regionesComunas.find((r) => r.region === form.region).comunas.map((c) => (
+              <option key={c} value={c}>{c}</option>
+            ))}
           </Form.Select>
           <Form.Control.Feedback type="invalid">{errores.comuna}</Form.Control.Feedback>
         </Form.Group>
-  
+
         <h5 className="mt-4">Datos de la tarjeta</h5>
         <Form.Group className="mb-3">
           <Form.Label>Nombre en la tarjeta</Form.Label>
@@ -201,7 +204,7 @@ export default function Checkout() {
           />
           <Form.Control.Feedback type="invalid">{errores.cardNombre}</Form.Control.Feedback>
         </Form.Group>
-  
+
         <Form.Group className="mb-3">
           <Form.Label>Número de tarjeta</Form.Label>
           <Form.Control
@@ -214,7 +217,7 @@ export default function Checkout() {
           />
           <Form.Control.Feedback type="invalid">{errores.cardNumero}</Form.Control.Feedback>
         </Form.Group>
-  
+
         <Row className="mb-3">
           <Col>
             <Form.Group>
@@ -245,7 +248,7 @@ export default function Checkout() {
             </Form.Group>
           </Col>
         </Row>
-  
+
         <Button
           variant="primary"
           type="submit"

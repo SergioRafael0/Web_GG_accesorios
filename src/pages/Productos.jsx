@@ -67,7 +67,7 @@ export default function Productos() {
         </Col>
 
         <Col md={3} className="text-md-end mt-2 mt-md-0">
-          <small className="text-muted">{filtered.length} productos</small>
+          <small className="text-muted">{filtered.length} Productos</small>
         </Col>
       </Row>
 
