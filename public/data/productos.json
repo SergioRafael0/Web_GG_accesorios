@@ -4,7 +4,7 @@
     "nombre": "Silla Gamer Pro",
     "precio": 150000,
     "categoria": "sillas",
-    "imagen": "/images/silla-gamer-pro.jpg",
+    "imagen": "/images/sillagamer1.avif",
     "descripcion": "Silla ergonómica con soporte lumbar ajustable y diseño gamer."
   },
   {
@@ -12,7 +12,7 @@
     "nombre": "Auriculares RGB HyperSound",
     "precio": 49990,
     "categoria": "audio",
-    "imagen": "/images/auriculares-rgb.jpg",
+    "imagen": "/images/rgb.png",
     "descripcion": "Auriculares con sonido envolvente y luces RGB sincronizadas."
   },
   {
@@ -20,7 +20,7 @@
     "nombre": "Teclado Mecánico Neón",
     "precio": 89990,
     "categoria": "teclados",
-    "imagen": "/images/teclado-neon.jpg",
+    "imagen": "/images/teclado koneko2.jpg",
     "descripcion": "Teclado mecánico con retroiluminación personalizable y switches azules."
   },
   {
@@ -28,7 +28,7 @@
     "nombre": "Mouse Gamer X-Pro",
     "precio": 45990,
     "categoria": "mouse",
-    "imagen": "/images/mouse-xpro.jpg",
+    "imagen": "/images/mouse.jpg",
     "descripcion": "Sensor óptico de alta precisión y diseño ergonómico con grip antideslizante."
   },
   {
