@@ -14,17 +14,17 @@ export default function Admin() {
 
   // Cargar datos iniciales (simulado con JSON o API)
   useEffect(() => {
-    fetch("/data/products.json")
+    fetch("/data/productos.json")
       .then((res) => res.json())
       .then((data) => setProductos(data))
       .catch((err) => console.error(err));
 
-    fetch("/data/users.json")
+    fetch("/data/usuarios.json")
       .then((res) => res.json())
       .then((data) => setUsuarios(data))
       .catch((err) => console.error(err));
 
-    fetch("/data/events.json")
+    fetch("/data/eventos.json")
       .then((res) => res.json())
       .then((data) => setEventos(data))
       .catch((err) => console.error(err));

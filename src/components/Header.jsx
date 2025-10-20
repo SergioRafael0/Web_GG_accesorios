@@ -6,19 +6,26 @@ export default function Header() {
   const [cartCount, setCartCount] = useState(0);
 
   const updateCartCount = () => {
-    const savedCart = JSON.parse(localStorage.getItem("cart")) || [];
-    const totalQty = savedCart.reduce((sum, item) => sum + item.quantity, 0);
-    setCartCount(totalQty);
+    try {
+      const saved = JSON.parse(localStorage.getItem("cart") || "[]");
+      const arr = Array.isArray(saved) ? saved : [];
+      const totalQty = arr.reduce(
+        (sum, item) => sum + (Number(item.quantity) || Number(item.qty) || 0),
+        0
+      );
+      setCartCount(totalQty);
+    } catch {
+      setCartCount(0);
+    }
   };
 
   useEffect(() => {
     updateCartCount(); // Inicial
-
-    // Escuchar evento global
     window.addEventListener("cartUpdated", updateCartCount);
-
+    window.addEventListener("storage", updateCartCount);
     return () => {
       window.removeEventListener("cartUpdated", updateCartCount);
+      window.removeEventListener("storage", updateCartCount);
     };
   }, []);
 

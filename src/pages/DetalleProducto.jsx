@@ -50,9 +50,15 @@ export default function DetalleProducto() {
               onClick={() => {
                 const cart = JSON.parse(localStorage.getItem("cart") || "[]");
                 const found = cart.find((it) => it.id === producto.id);
-                if (found) found.qty += 1;
-                else cart.push({ ...producto, qty: 1 });
+                if (found) {
+                  // usar la propiedad 'quantity' de forma consistente
+                  found.quantity = (found.quantity || 0) + 1;
+                } else {
+                  cart.push({ ...producto, quantity: 1 });
+                }
                 localStorage.setItem("cart", JSON.stringify(cart));
+                window.dispatchEvent(new Event("cartUpdated"));
+                // evita alert() para no romper UX; dejar comentario para cambiar a toast si se desea
                 alert(`${producto.nombre} agregado al carrito`);
               }}
             >
