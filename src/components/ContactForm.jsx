@@ -35,17 +35,17 @@ export default function ContactForm() {
     <form id="contact-form" noValidate onSubmit={handleSubmit}>
       <div className="form-row">
         <label htmlFor="name">Nombre</label>
-        <input id="name" name="name" value={form.name} onChange={(e)=>setForm({...form, name: e.target.value})} required minLength={2} />
+        <input  className="form-control bg-dark text-white border-secondary" id="name" name="name" value={form.name} onChange={(e)=>setForm({...form, name: e.target.value})} required minLength={2} />
         <small className="error">{errors.name}</small>
       </div>
       <div className="form-row">
         <label htmlFor="email">Email</label>
-        <input id="email" name="email" type="email" value={form.email} onChange={(e)=>setForm({...form, email: e.target.value})} required />
+        <input  className="form-control bg-dark text-white border-secondary" id="email" name="email" type="email" value={form.email} onChange={(e)=>setForm({...form, email: e.target.value})} required />
         <small className="error">{errors.email}</small>
       </div>
       <div className="form-row">
         <label htmlFor="mensaje">Mensaje</label>
-        <textarea id="mensaje" name="mensaje" rows={4} value={form.mensaje} onChange={(e)=>setForm({...form, mensaje: e.target.value})} required minLength={8} />
+        <textarea  className="form-control bg-dark text-white border-secondary" id="mensaje" name="mensaje" rows={4} value={form.mensaje} onChange={(e)=>setForm({...form, mensaje: e.target.value})} required minLength={8} />
         <small className="error">{errors.mensaje}</small>
       </div>
       <div className="form-row checkbox-row">
