@@ -6,6 +6,7 @@ import UserForm from "../components/UserForm";
 import UserTable from "../components/UserTable";
 import EventForm from "../components/EventForm";
 import EventTable from "../components/EventTable";
+import { getProductos } from "../services/productos";
 
 export default function Admin() {
   const [productos, setProductos] = useState([]);
@@ -14,20 +15,24 @@ export default function Admin() {
 
   // Cargar datos iniciales (simulado con JSON o API)
   useEffect(() => {
-    fetch("/data/productos.json")
-      .then((res) => res.json())
-      .then((data) => setProductos(data))
-      .catch((err) => console.error(err));
+    (async () => {
+      try {
+        const data = await getProductos();
+        setProductos(Array.isArray(data) ? data : []);
+      } catch {
+        setProductos([]);
+      }
+    })();
 
     fetch("/data/usuarios.json")
       .then((res) => res.json())
-      .then((data) => setUsuarios(data))
-      .catch((err) => console.error(err));
+      .then((data) => setUsuarios(Array.isArray(data) ? data : []))
+      .catch(() => setUsuarios([]));
 
     fetch("/data/eventos.json")
       .then((res) => res.json())
-      .then((data) => setEventos(data))
-      .catch((err) => console.error(err));
+      .then((data) => setEventos(Array.isArray(data) ? data : []))
+      .catch(() => setEventos([]));
   }, []);
 
   // Handlers productos

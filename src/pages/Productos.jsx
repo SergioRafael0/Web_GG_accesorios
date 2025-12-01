@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Container, Row, Col, Form, InputGroup, Button } from "react-bootstrap";
 import ProductCard from "../components/ProductCard";
+import { getProductos } from "../services/productos";
 
 function groupByCategory(items) {
   return items.reduce((acc, p) => {
@@ -15,13 +16,18 @@ export default function Productos() {
   const [categoria, setCategoria] = useState("all");
 
   useEffect(() => {
-    fetch("/data/productos.json")
-      .then((res) => res.json())
-      .then((data) => setProductos(Array.isArray(data) ? data : []))
-      .catch((err) => {
-        console.error("Error cargando productos:", err);
-        setProductos([]);
-      });
+    let mounted = true;
+    (async () => {
+      try {
+        const data = await getProductos();
+        if (mounted) setProductos(Array.isArray(data) ? data : []);
+      } catch {
+        if (mounted) setProductos([]);
+      }
+    })();
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   // obtener categorías dinámicamente

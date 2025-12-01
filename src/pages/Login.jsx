@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Container, Row, Col, Form, Button, Card } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { validarCorreo, validarRequerido } from "../utils/validaciones";
+import { login as apiLogin } from "../services/auth";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -21,31 +22,19 @@ export default function Login() {
     setErrores(newErrors);
 
     if (Object.keys(newErrors).length === 0) {
-      // Verificar usuarios normales en localStorage
-      const usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
-      const user = usuarios.find(
-        (u) => u.email === formData.email && u.password === formData.password
-      );
-
-      // Verificar credenciales de admin
-      const admin =
-        formData.email === "adminggaccesorios@gmail.com" &&
-        formData.password === "Contraseñasegura123!";
-
-      if (user || admin) {
-        localStorage.setItem(
-          "usuarioActivo",
-          JSON.stringify(user || { email: formData.email, rol: admin ? "admin" : "user" })
-        );
-
-        if (admin) {
-          navigate("/admin"); // Redirige al panel de administración
-        } else {
-          navigate("/"); // Usuario normal
+      (async () => {
+        try {
+          const result = await apiLogin(formData.email, formData.password);
+          const role = result?.user?.role || "USER";
+          if (role === "ADMIN") {
+            navigate("/admin");
+          } else {
+            navigate("/");
+          }
+        } catch {
+          setErrores({ general: "Usuario o contraseña incorrectos" });
         }
-      } else {
-        setErrores({ general: "Usuario o contraseña incorrectos" });
-      }
+      })();
     }
   };
 

@@ -1,19 +1,25 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Container, Row, Col, Button, Image } from "react-bootstrap";
+import { getProductoById } from "../services/productos";
 
 export default function DetalleProducto() {
   const { id } = useParams();
   const [producto, setProducto] = useState(null);
 
   useEffect(() => {
-    fetch("/data/productos.json")
-      .then((res) => res.json())
-      .then((data) => {
-        const encontrado = data.find((p) => p.id === parseInt(id));
-        setProducto(encontrado || null);
-      })
-      .catch((err) => console.error("Error cargando detalle:", err));
+    let mounted = true;
+    (async () => {
+      try {
+        const data = await getProductoById(id);
+        if (mounted) setProducto(data || null);
+      } catch {
+        if (mounted) setProducto(null);
+      }
+    })();
+    return () => {
+      mounted = false;
+    };
   }, [id]);
 
   if (!producto) {
@@ -29,7 +35,7 @@ export default function DetalleProducto() {
       <Row className="align-items-center">
         <Col md={6} className="text-center mb-4 mb-md-0">
           <Image
-            src={producto.imagen}
+            src={resolveImage(producto.imagen)}
             alt={producto.nombre}
             fluid
             rounded
@@ -74,3 +80,13 @@ export default function DetalleProducto() {
     </Container>
   );
 }
+  const resolveImage = (u) => {
+    let s = String(u || "").trim();
+    s = s.replace(/^`+|`+$/g, "");
+    s = s.replace(/^"+|"+$/g, "");
+    s = s.replace(/^'+|'+$/g, "");
+    if (!s) return "https://via.placeholder.com/800x450?text=Sin+imagen";
+    if (s.startsWith("http://") || s.startsWith("https://") || s.startsWith("data:")) return s;
+    if (s.startsWith("/")) return encodeURI(s);
+    return s;
+  };

@@ -2,29 +2,28 @@ import React from "react";
 import { Card, Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
 
-/**
- * Resolución de imagen:
- * - Si la ruta comienza con '/' se asume que está en public (p. ej. "/images/xxx.jpg")
- * - Si es sólo un nombre de archivo (p. ej. "xxx.jpg"), intenta resolver desde src/assets/images
- * - Devuelve una URL válida o ruta original; Card.Img maneja el onError para fallback.
- */
-function resolveImagePath(imagen) {
-  if (!imagen) return "/images/fallback.jpg";
-  if (imagen.startsWith("/")) {
-    // encodeURI para manejar espacios y caracteres especiales en nombres de archivo
-    return encodeURI(imagen);
-  }
+function cleanUrl(u) {
+  let s = String(u || "").trim();
+  s = s.replace(/^`+|`+$/g, "");
+  s = s.replace(/^"+|"+$/g, "");
+  s = s.replace(/^'+|'+$/g, "");
+  return s;
+}
+
+function resolveRemoteOrLocal(imagen) {
+  const raw = cleanUrl(imagen);
+  if (!raw) return "/images/fallback.jpg";
+  if (raw.startsWith("http://") || raw.startsWith("https://") || raw.startsWith("data:")) return raw;
+  if (raw.startsWith("/")) return encodeURI(raw);
   try {
-    // Si guardas en src/assets/images, la siguiente línea genera la URL bundlera de Vite
-    return new URL(`../assets/images/${imagen}`, import.meta.url).href;
+    return new URL(`../assets/images/${raw}`, import.meta.url).href;
   } catch {
-    // Fallback: devolver tal cual (quizás sea una URL absoluta)
-    return imagen;
+    return raw;
   }
 }
 
 export default function ProductCard({ id, nombre, precio, imagen, descripcion }) {
-  const imgSrc = resolveImagePath(imagen);
+  const imgSrc = resolveRemoteOrLocal(imagen);
 
   const handleAddToCart = () => {
     const cart = JSON.parse(localStorage.getItem("cart") || "[]");
@@ -50,7 +49,7 @@ export default function ProductCard({ id, nombre, precio, imagen, descripcion })
           style={{ height: "220px", objectFit: "cover" }}
           onError={(e) => {
             e.currentTarget.onerror = null;
-            e.currentTarget.src = "/images/fallback.jpg";
+            e.currentTarget.src = "https://via.placeholder.com/400x220?text=Sin+imagen";
           }}
         />
       </Link>

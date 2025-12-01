@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { Container, Row, Col, Form, Button, Card } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import { validarCorreo, validarPassword, validarRequerido, validarCoincidencia } from "../utils/validaciones";
+import { validarRequerido, validarCorreo, validarPassword, validarCoincidencia } from "../utils/validaciones";
+import { register as apiRegister } from "../services/auth";
 
 export default function Register() {
   const navigate = useNavigate();
@@ -32,15 +33,18 @@ export default function Register() {
     setErrores(newErrors);
 
     if (Object.keys(newErrors).length === 0) {
-      // Guardar usuario en localStorage
-      const usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
-      usuarios.push({
-        nombre: formData.name,
-        email: formData.email,
-        password: formData.password,
-      });
-      localStorage.setItem("usuarios", JSON.stringify(usuarios));
-      navigate("/login");
+      (async () => {
+        try {
+          await apiRegister({
+            email: formData.email,
+            password: formData.password,
+            nombre: formData.name,
+          });
+          navigate("/login");
+        } catch {
+          setErrores({ general: "No se pudo registrar el usuario" });
+        }
+      })();
     }
   };
 

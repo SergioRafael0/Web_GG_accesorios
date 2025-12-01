@@ -2,20 +2,27 @@ import React, { useEffect, useState } from "react";
 import ProductCard from "../components/ProductCard";
 import HeroCarousel from "../components/HeroCarousel";
 import ContactForm from "../components/ContactForm";
+import { getProductos } from "../services/productos";
 
 export default function Home() {
   const [productos, setProductos] = useState([]);
   const [cargando, setCargando] = useState(true);
 
   useEffect(() => {
-    fetch("/data/productos.json")
-      .then((res) => res.json())
-      .then((data) => setProductos(Array.isArray(data) ? data : []))
-      .catch((err) => {
-        console.error("Error cargando productos:", err);
+    let mounted = true;
+    (async () => {
+      try {
+        const data = await getProductos();
+        if (mounted) setProductos(Array.isArray(data) ? data : []);
+      } catch {
         setProductos([]);
-      })
-      .finally(() => setCargando(false));
+      } finally {
+        if (mounted) setCargando(false);
+      }
+    })();
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   const destacados = productos.slice(0, 4);
