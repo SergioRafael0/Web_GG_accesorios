@@ -11,6 +11,11 @@ export default function Register() {
     email: "",
     password: "",
     confirmar: "",
+    apellido: "",
+    telefono: "",
+    direccion: "",
+    ciudad: "",
+    codigoPostal: "",
   });
 
   const [errores, setErrores] = useState({});
@@ -39,6 +44,12 @@ export default function Register() {
             email: formData.email,
             password: formData.password,
             nombre: formData.name,
+            apellido: formData.apellido || null,
+            telefono: formData.telefono || null,
+            direccion: formData.direccion || null,
+            ciudad: formData.ciudad || null,
+            codigoPostal: formData.codigoPostal || null,
+            role: "USER",
           });
           navigate("/login");
         } catch {
@@ -70,6 +81,17 @@ export default function Register() {
                 </Form.Group>
 
                 <Form.Group className="mb-3">
+                  <Form.Label>Apellido</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="apellido"
+                    value={formData.apellido}
+                    onChange={handleChange}
+                    className="bg-dark text-white border-secondary"
+                  />
+                </Form.Group>
+
+                <Form.Group className="mb-3">
                   <Form.Label>Email</Form.Label>
                   <Form.Control
                     type="email"
@@ -80,6 +102,50 @@ export default function Register() {
                     className="bg-dark text-white border-secondary"
                   />
                   <Form.Control.Feedback type="invalid">{errores.email}</Form.Control.Feedback>
+                </Form.Group>
+
+                <Form.Group className="mb-3">
+                  <Form.Label>Teléfono</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="telefono"
+                    value={formData.telefono}
+                    onChange={handleChange}
+                    className="bg-dark text-white border-secondary"
+                  />
+                </Form.Group>
+
+                <Form.Group className="mb-3">
+                  <Form.Label>Dirección</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="direccion"
+                    value={formData.direccion}
+                    onChange={handleChange}
+                    className="bg-dark text-white border-secondary"
+                  />
+                </Form.Group>
+
+                <Form.Group className="mb-3">
+                  <Form.Label>Comuna</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="ciudad"
+                    value={formData.ciudad}
+                    onChange={handleChange}
+                    className="bg-dark text-white border-secondary"
+                  />
+                </Form.Group>
+
+                <Form.Group className="mb-4">
+                  <Form.Label>Código Postal</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="codigoPostal"
+                    value={formData.codigoPostal}
+                    onChange={handleChange}
+                    className="bg-dark text-white border-secondary"
+                  />
                 </Form.Group>
 
                 <Form.Group className="mb-3">

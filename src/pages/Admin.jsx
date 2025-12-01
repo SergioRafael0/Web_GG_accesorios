@@ -1,17 +1,20 @@
 import React, { useEffect, useState } from "react";
-import { Container, Row, Col } from "react-bootstrap";
+import { Container, Row, Col, Modal, Button } from "react-bootstrap";
 import ProductForm from "../components/ProductForm";
 import ProductTable from "../components/ProductTable";
 import UserForm from "../components/UserForm";
 import UserTable from "../components/UserTable";
-import EventForm from "../components/EventForm";
-import EventTable from "../components/EventTable";
-import { getProductos } from "../services/productos";
+import { getProductos, updateProducto, deleteProducto, createProducto } from "../services/productos";
+import { http } from "../services/http";
+import { register as apiRegister } from "../services/auth";
 
 export default function Admin() {
   const [productos, setProductos] = useState([]);
   const [usuarios, setUsuarios] = useState([]);
-  const [eventos, setEventos] = useState([]);
+  const [editProducto, setEditProducto] = useState(null);
+  const [editUsuario, setEditUsuario] = useState(null);
+  const [showProductModal, setShowProductModal] = useState(false);
+  const [showUserModal, setShowUserModal] = useState(false);
 
   // Cargar datos iniciales (simulado con JSON o API)
   useEffect(() => {
@@ -23,63 +26,150 @@ export default function Admin() {
         setProductos([]);
       }
     })();
-
-    fetch("/data/usuarios.json")
-      .then((res) => res.json())
-      .then((data) => setUsuarios(Array.isArray(data) ? data : []))
-      .catch(() => setUsuarios([]));
-
-    fetch("/data/eventos.json")
-      .then((res) => res.json())
-      .then((data) => setEventos(Array.isArray(data) ? data : []))
-      .catch(() => setEventos([]));
+    (async () => {
+      try {
+        const data = await http.get("/users");
+        const list = Array.isArray(data) ? data : (data?.content ?? []);
+        setUsuarios(list);
+      } catch {
+        setUsuarios([]);
+      }
+    })();
   }, []);
 
   // Handlers productos
-  const handleAddProduct = (producto) => setProductos([...productos, producto]);
-  const handleDeleteProduct = (id) => setProductos(productos.filter((p) => p.id !== id));
+  const handleDeleteProduct = async (id) => {
+    try {
+      await deleteProducto(id);
+      setProductos(productos.filter((p) => p.id !== id));
+    } catch {
+      // sin cambios si falla
+    }
+  };
+  const handleEditProduct = (producto) => { setEditProducto(producto); setShowProductModal(true); };
+  const submitProduct = async (payload) => {
+    const url = String(payload.imagenurl || payload.imagen || "").replace(/[`]/g, "");
+    const body = {
+      nombre: payload.nombre,
+      descripcion: payload.descripcion,
+      tipo: payload.tipo,
+      precio: Number(payload.precio),
+      stock: Number(payload.stock),
+      imagen: url,
+      imagenUrl: url,
+    };
+    if (editProducto && editProducto.id) {
+      const updated = await updateProducto(editProducto.id, body);
+      setProductos((prev) => prev.map((p) => (p.id === editProducto.id ? updated : p)));
+      setEditProducto(null);
+      setShowProductModal(false);
+    } else {
+      const created = await createProducto(body);
+      setProductos((prev) => [...prev, created]);
+    }
+  };
 
   // Handlers usuarios
-  const handleAddUser = (usuario) => setUsuarios([...usuarios, usuario]);
-  const handleDeleteUser = (id) => setUsuarios(usuarios.filter((u) => u.id !== id));
+  const handleAddUser = async (usuario) => {
+    try {
+      const created = await apiRegister({
+        email: usuario.email,
+        password: usuario.password,
+        nombre: usuario.nombre,
+        apellido: usuario.apellido || null,
+        telefono: usuario.telefono || null,
+        direccion: usuario.direccion || null,
+        ciudad: usuario.ciudad || null,
+        codigoPostal: usuario.codigoPostal || null,
+        role: usuario.role || "USER",
+      });
+      setUsuarios((prev) => [...prev, created]);
+    } catch (e) {
+      void e;
+    }
+  };
+  const handleDeleteUser = async (id) => {
+    try {
+      await http.del(`/users/${id}`);
+      setUsuarios((prev) => prev.filter((u) => u.id !== id));
+    } catch {
+      // sin cambios si falla
+    }
+  };
+  const handleEditUser = (usuario) => { setEditUsuario(usuario); setShowUserModal(true); };
+  const submitUser = async (payload) => {
+    const id = editUsuario?.id || editUsuario?.user?.id;
+    if (id) {
+      const body = {
+        email: payload.email,
+        password: payload.password || undefined,
+        nombre: payload.nombre,
+        apellido: payload.apellido || null,
+        telefono: payload.telefono || null,
+        direccion: payload.direccion || null,
+        ciudad: payload.ciudad || null,
+        codigoPostal: payload.codigoPostal || null,
+        role: payload.role || (editUsuario.role || editUsuario?.user?.role || "USER"),
+      };
+      const updated = await http.put(`/users/${id}`, body);
+      setUsuarios((prev) => prev.map((u) => ((u.id || u.user?.id) === id ? updated : u)));
+      setEditUsuario(null);
+      setShowUserModal(false);
+    } else {
+      await handleAddUser(payload);
+    }
+  };
 
-  // Handlers eventos
-  const handleAddEvent = (evento) => setEventos([...eventos, evento]);
-  const handleDeleteEvent = (id) => setEventos(eventos.filter((e) => e.id !== id));
+  
 
   return (
-    <Container className="py-5">
+    <Container fluid className="py-5">
       <h2 className="text-center mb-4 fw-bold text-white">Panel de Administración</h2>
 
       {/* Productos */}
       <Row className="mb-5">
-        <Col md={6}>
-          <ProductTable productos={productos} onDelete={handleDeleteProduct} />
+        <Col md={6} className="px-3">
+          <ProductTable productos={productos} onDelete={handleDeleteProduct} onEdit={handleEditProduct} />
         </Col>
-        <Col md={6}>
-          <ProductForm onAddProduct={handleAddProduct} />
+        <Col md={6} className="px-3">
+          <ProductForm initial={null} onSubmit={submitProduct} />
         </Col>
       </Row>
 
       {/* Usuarios */}
       <Row className="mb-5">
-        <Col md={6}>
-          <UserTable usuarios={usuarios} onDelete={handleDeleteUser} />
+        <Col md={6} className="px-3">
+          <UserTable usuarios={usuarios} onDelete={handleDeleteUser} onEdit={handleEditUser} />
         </Col>
-        <Col md={6}>
-          <UserForm onAddUser={handleAddUser} />
+        <Col md={6} className="px-3">
+          <UserForm initial={null} onSubmit={submitUser} />
         </Col>
       </Row>
 
-      {/* Eventos */}
-      <Row>
-        <Col md={6}>
-          <EventTable eventos={eventos} onDelete={handleDeleteEvent} />
-        </Col>
-        <Col md={6}>
-          <EventForm onAddEvent={handleAddEvent} />
-        </Col>
-      </Row>
+      <Modal show={showProductModal} onHide={() => { setShowProductModal(false); setEditProducto(null); }} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Editar Producto</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <ProductForm initial={editProducto} onSubmit={submitProduct} />
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => { setShowProductModal(false); setEditProducto(null); }}>Cerrar</Button>
+        </Modal.Footer>
+      </Modal>
+
+      <Modal show={showUserModal} onHide={() => { setShowUserModal(false); setEditUsuario(null); }} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Editar Usuario</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <UserForm initial={editUsuario} onSubmit={submitUser} />
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => { setShowUserModal(false); setEditUsuario(null); }}>Cerrar</Button>
+        </Modal.Footer>
+      </Modal>
+
     </Container>
   );
 }

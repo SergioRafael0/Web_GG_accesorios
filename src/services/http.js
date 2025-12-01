@@ -2,14 +2,17 @@ const BASE_URL = import.meta.env.VITE_API_URL || "https://apitest-1-95ny.onrende
 
 async function request(path, options = {}) {
   const token = localStorage.getItem("token");
-  const headers = { "Content-Type": "application/json", ...(options.headers || {}) };
-  const isPublic = path.startsWith("/productos") || path.startsWith("/imagenes") || path.startsWith("/auth/");
+  const isFormData = options.body && typeof FormData !== "undefined" && options.body instanceof FormData;
+  const defaultHeaders = isFormData ? {} : { "Content-Type": "application/json" };
+  const headers = { ...defaultHeaders, ...(options.headers || {}) };
+  const method = (options.method || "GET").toUpperCase();
+  const isPublic = ((path.startsWith("/productos") && method === "GET")) || path.startsWith("/imagenes") || path.startsWith("/auth/");
   if (token && !isPublic) headers["Authorization"] = `Bearer ${token}`;
   try {
     const res = await fetch(`${BASE_URL}${path}`, {
       method: options.method || "GET",
       headers,
-      body: options.body ? JSON.stringify(options.body) : undefined,
+      body: options.body ? (isFormData ? options.body : JSON.stringify(options.body)) : undefined,
     });
     const contentType = res.headers.get("content-type") || "";
     const data = contentType.includes("application/json") ? await res.json() : await res.text();

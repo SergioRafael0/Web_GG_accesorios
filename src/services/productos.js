@@ -12,3 +12,15 @@ export function getProductoById(id) {
   });
 }
 
+export function createProducto(payload) {
+  return http.post("/producto", payload);
+}
+
+export function updateProducto(id, payload) {
+  return http.put(`/productos/${id}`, payload);
+}
+
+export function deleteProducto(id) {
+  return http.del(`/productos/${id}`);
+}
+

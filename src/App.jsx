@@ -1,5 +1,5 @@
 import React, { Suspense } from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import ScrollToTop from "./components/ScrollToTop";
@@ -16,6 +16,17 @@ import Cart from "./pages/Cart";
 import NotFound from "./pages/NotFound";
 
 export default function App() {
+  function RequireAdmin({ children }) {
+    try {
+      const raw = localStorage.getItem("usuarioActivo");
+      const user = raw ? JSON.parse(raw) : null;
+      const role = user?.role || user?.user?.role; // tolerar estructuras
+      if (role === "ADMIN") return children;
+      return <Navigate to="/login" replace />;
+    } catch {
+      return <Navigate to="/login" replace />;
+    }
+  }
   return (
     <BrowserRouter>
       <div className="d-flex flex-column min-vh-100 text-light">
@@ -32,7 +43,14 @@ export default function App() {
               <Route path="/checkout" element={<Checkout />} />
               <Route path="/success" element={<Success />} />
               <Route path="/failure" element={<Failure />} />
-              <Route path="/admin" element={<Admin />} />
+              <Route
+                path="/admin"
+                element={
+                  <RequireAdmin>
+                    <Admin />
+                  </RequireAdmin>
+                }
+              />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/cart" element={<Cart />} />

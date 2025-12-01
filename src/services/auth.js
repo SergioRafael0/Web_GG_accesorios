@@ -6,6 +6,7 @@ export async function login(email, password) {
   const user = result?.user;
   if (token) localStorage.setItem("token", token);
   if (user) localStorage.setItem("usuarioActivo", JSON.stringify(user));
+  try { window.dispatchEvent(new Event("userUpdated")); } catch (e) { void e; }
   return { token, user };
 }
 
@@ -20,5 +21,6 @@ export async function me() {
 export function logout() {
   localStorage.removeItem("token");
   localStorage.removeItem("usuarioActivo");
+  try { window.dispatchEvent(new Event("userUpdated")); } catch (e) { void e; }
 }
 

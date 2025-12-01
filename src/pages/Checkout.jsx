@@ -8,6 +8,7 @@ import {
   validarExpiracion
 } from "../utils/validaciones";
 import regionesComunas from "../data/ComunasRegiones.json";
+import { me as apiMe } from "../services/auth";
 
 export default function Checkout() {
   const [cart, setCart] = useState([]);
@@ -37,6 +38,38 @@ export default function Checkout() {
       savedCart = [];
     }
     setCart(savedCart);
+    // Prefill datos del usuario si está logueado
+    try {
+      const raw = localStorage.getItem("usuarioActivo");
+      const u = raw ? JSON.parse(raw) : null;
+      const profile = u?.profile || {};
+      const nombreCompleto = [profile.nombre, profile.apellido].filter(Boolean).join(" ").trim();
+      setForm((prev) => ({
+        ...prev,
+        nombre: nombreCompleto || prev.nombre,
+        email: u?.email || prev.email,
+        direccion: profile.direccion || prev.direccion,
+      }));
+    } catch {
+      // ignorar
+    }
+    // Prefill desde API /users/me si hay token
+    (async () => {
+      try {
+        const data = await apiMe();
+        const profile = data?.profile || {};
+        const nombreCompleto = [profile.nombre, profile.apellido].filter(Boolean).join(" ").trim();
+        setForm((prev) => ({
+          ...prev,
+          nombre: nombreCompleto || prev.nombre,
+          email: data?.email || prev.email,
+          direccion: profile.direccion || prev.direccion,
+          comuna: profile.ciudad || prev.comuna,
+        }));
+      } catch {
+        // ignorar si no hay sesión o falla
+      }
+    })();
   }, []);
 
   const total = cart.reduce((sum, item) => sum + item.precio * item.quantity, 0);
