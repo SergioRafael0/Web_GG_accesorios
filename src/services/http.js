@@ -1,24 +1,35 @@
-const BASE_URL = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? "/api" : "http://localhost:8080");
+const BASE_URL = import.meta.env.VITE_API_URL || "https://apitest-1-95ny.onrender.com";
 
 async function request(path, options = {}) {
   const token = localStorage.getItem("token");
   const headers = { "Content-Type": "application/json", ...(options.headers || {}) };
-  if (token) headers["Authorization"] = `Bearer ${token}`;
-  const res = await fetch(`${BASE_URL}${path}`, {
-    method: options.method || "GET",
-    headers,
-    body: options.body ? JSON.stringify(options.body) : undefined,
-  });
-  const contentType = res.headers.get("content-type") || "";
-  const data = contentType.includes("application/json") ? await res.json() : await res.text();
-  if (!res.ok) {
-    const message = typeof data === "string" ? data : data?.message || "Error de API";
-    const error = new Error(message);
-    error.status = res.status;
-    error.data = data;
+  const isPublic = path.startsWith("/productos") || path.startsWith("/imagenes") || path.startsWith("/auth/");
+  if (token && !isPublic) headers["Authorization"] = `Bearer ${token}`;
+  try {
+    const res = await fetch(`${BASE_URL}${path}`, {
+      method: options.method || "GET",
+      headers,
+      body: options.body ? JSON.stringify(options.body) : undefined,
+    });
+    const contentType = res.headers.get("content-type") || "";
+    const data = contentType.includes("application/json") ? await res.json() : await res.text();
+    if (!res.ok) {
+      const message = typeof data === "string" ? data : data?.message || "Error de API";
+      const error = new Error(message);
+      error.status = res.status;
+      error.data = data;
+      error.code = "HTTP_ERROR";
+      throw error;
+    }
+    return data;
+  } catch (e) {
+    if (e && e.status) throw e;
+    const error = new Error("Fallo de red o CORS");
+    error.status = 0;
+    error.code = "NETWORK_ERROR";
+    error.data = { cause: String(e && e.message ? e.message : e) };
     throw error;
   }
-  return data;
 }
 
 export const http = {

@@ -7,15 +7,20 @@ import { getProductos } from "../services/productos";
 export default function Home() {
   const [productos, setProductos] = useState([]);
   const [cargando, setCargando] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     let mounted = true;
     (async () => {
       try {
         const data = await getProductos();
-        if (mounted) setProductos(Array.isArray(data) ? data : []);
+        if (mounted) {
+          setProductos(Array.isArray(data) ? data : []);
+          setError("");
+        }
       } catch {
         setProductos([]);
+        setError("No se pudo cargar productos");
       } finally {
         if (mounted) setCargando(false);
       }
@@ -26,10 +31,6 @@ export default function Home() {
   }, []);
 
   const destacados = productos.slice(0, 4);
-
-  if (cargando) {
-    return <div className="container py-5 text-white">Cargando destacados...</div>;
-  }
 
   return (
     <div className="text-white">
@@ -61,9 +62,18 @@ export default function Home() {
           <h2>Destacados</h2>
           <p className="lead">Explora nuestra selección</p>
           <div className="product-grid">
-            {destacados.map((p) => (
-              <ProductCard key={p.id} {...p} />
-            ))}
+            {cargando && (
+              <p className="text-muted">Cargando destacados...</p>
+            )}
+            {!cargando && error && (
+              <p className="text-danger">No se pudo cargar productos</p>
+            )}
+            {!cargando && !error && destacados.length > 0 && (
+              destacados.map((p) => <ProductCard key={p.id} {...p} />)
+            )}
+            {!cargando && !error && destacados.length === 0 && (
+              <p className="text-muted">No hay productos disponibles</p>
+            )}
           </div>
         </section>
 

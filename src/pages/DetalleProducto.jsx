@@ -6,15 +6,26 @@ import { getProductoById } from "../services/productos";
 export default function DetalleProducto() {
   const { id } = useParams();
   const [producto, setProducto] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     let mounted = true;
     (async () => {
+      setLoading(true);
       try {
         const data = await getProductoById(id);
-        if (mounted) setProducto(data || null);
+        if (mounted) {
+          setProducto(data || null);
+          setError("");
+        }
       } catch {
-        if (mounted) setProducto(null);
+        if (mounted) {
+          setProducto(null);
+          setError("No se pudo cargar el producto");
+        }
+      } finally {
+        if (mounted) setLoading(false);
       }
     })();
     return () => {
@@ -22,10 +33,18 @@ export default function DetalleProducto() {
     };
   }, [id]);
 
-  if (!producto) {
+  if (loading) {
     return (
       <Container className="text-center text-white py-5">
         <h3>Cargando producto...</h3>
+      </Container>
+    );
+  }
+
+  if (error || !producto) {
+    return (
+      <Container className="text-center text-white py-5">
+        <h3 className="text-danger">No se pudo cargar el producto</h3>
       </Container>
     );
   }

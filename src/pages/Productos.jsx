@@ -5,7 +5,8 @@ import { getProductos } from "../services/productos";
 
 function groupByCategory(items) {
   return items.reduce((acc, p) => {
-    (acc[p.categoria] = acc[p.categoria] || []).push(p);
+    const key = p.tipo || "sin-categoria";
+    (acc[key] = acc[key] || []).push(p);
     return acc;
   }, {});
 }
@@ -14,24 +15,45 @@ export default function Productos() {
   const [productos, setProductos] = useState([]);
   const [query, setQuery] = useState("");
   const [categoria, setCategoria] = useState("all");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     let mounted = true;
-    (async () => {
+    const load = async () => {
+      setLoading(true);
+      setError(null);
       try {
         const data = await getProductos();
-        if (mounted) setProductos(Array.isArray(data) ? data : []);
-      } catch {
-        if (mounted) setProductos([]);
+        if (!Array.isArray(data)) {
+          const e = new Error("Formato inesperado: la API no devolvió un arreglo");
+          e.code = "BAD_FORMAT";
+          e.status = 200;
+          throw e;
+        }
+        if (mounted) {
+          setProductos(data);
+        }
+      } catch (err) {
+        if (mounted) {
+          setProductos([]);
+          setError({
+            message: err?.message || "No se pudo cargar el catálogo",
+            status: typeof err?.status === "number" ? err.status : 0,
+            code: err?.code || "UNKNOWN",
+          });
+        }
+      } finally {
+        if (mounted) setLoading(false);
       }
-    })();
+    };
+    load();
     return () => {
       mounted = false;
     };
   }, []);
 
-  // obtener categorías dinámicamente
-  const categorias = Array.from(new Set(productos.map((p) => p.categoria || "sin-categoria")));
+  const categorias = Array.from(new Set(productos.map((p) => p.tipo || "sin-categoria")));
   const byCat = groupByCategory(productos);
 
   const filtered = productos.filter((p) => {
@@ -39,9 +61,43 @@ export default function Productos() {
       query.trim() === "" ||
       p.nombre.toLowerCase().includes(query.toLowerCase()) ||
       (p.descripcion || "").toLowerCase().includes(query.toLowerCase());
-    const matchCat = categoria === "all" || (p.categoria || "") === categoria;
+    const matchCat = categoria === "all" || (p.tipo || "") === categoria;
     return matchQuery && matchCat;
   });
+
+  if (loading) {
+    return (
+      <Container className="py-5">
+        <h2 className="mb-4">Catálogo de Productos</h2>
+        <p className="text-muted">Cargando catálogo...</p>
+      </Container>
+    );
+  }
+
+  if (error) {
+    return (
+      <Container className="py-5">
+        <h2 className="mb-4">Catálogo de Productos</h2>
+        <div className="mb-3">
+          <p className="text-danger mb-1">No se pudo cargar el catálogo</p>
+          <small className="text-muted">Detalle: {error.message}</small>
+          <div className="mt-2">
+            <small className="text-muted">Código: {error.code} · Estado: {error.status}</small>
+          </div>
+        </div>
+        <div className="mb-3">
+          <strong>Diagnóstico:</strong>
+          <ul>
+            <li>API caída o latencia alta</li>
+            <li>CORS deshabilitado o bloqueado</li>
+            <li>URL base incorrecta</li>
+            <li>Formato inesperado del endpoint</li>
+          </ul>
+        </div>
+        <Button variant="secondary" onClick={() => window.location.reload()}>Reintentar</Button>
+      </Container>
+    );
+  }
 
   return (
     <Container className="py-5">
@@ -84,9 +140,13 @@ export default function Productos() {
               <ProductCard {...p} />
             </Col>
           ))
+        ) : productos.length > 0 ? (
+          <Col>
+            <p className="text-muted">No hay coincidencias con el filtro actual</p>
+          </Col>
         ) : (
           <Col>
-            <p className="text-muted">No se encontraron productos.</p>
+            <p className="text-muted">No hay productos disponibles</p>
           </Col>
         )}
       </Row>
