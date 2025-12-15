@@ -77,11 +77,11 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="nosotros" className="about container">
-          <h2>Nosotros</h2>
+        <section id="nosotros" className="about container" style={{ backgroundColor: "var(--accent)", color: "#fff", padding: "2rem", borderRadius: "var(--radius)", marginTop: "2rem", marginBottom: "2rem" }}>
+          <h2 style={{ color: "#fff" }}>Nosotros</h2>
           <div className="about-grid">
             <p>
-              En GG Accesorios creemos que el gaming es más que un pasatiempo...
+              En GG Accesorios, nuestra pasión por el gaming nos impulsa a ofrecerte solo lo mejor. Nos dedicamos a seleccionar meticulosamente cada producto de nuestro catálogo, asegurándonos de que cumpla con los más altos estándares de calidad y rendimiento que todo gamer merece. Desde teclados mecánicos de última generación hasta sillas ergonómicas diseñadas para largas sesiones de juego, nuestro objetivo es potenciar tu experiencia y llevar tu setup al siguiente nivel. Entendemos que cada jugador es único, por eso ofrecemos una amplia variedad de accesorios que se adaptan a tu estilo y necesidades. Más que una tienda, somos una comunidad comprometida con el mundo gaming, brindando asesoría experta y un servicio al cliente excepcional para que encuentres exactamente lo que buscas. ¡Únete a la familia GG Accesorios y equipate para la victoria!
             </p>
             <ul>
               <li>Envíos a todo Chile</li>
