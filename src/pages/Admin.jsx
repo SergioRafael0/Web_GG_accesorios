@@ -28,7 +28,7 @@ export default function Admin() {
     })();
     (async () => {
       try {
-        const data = await http.get("/users");
+        const data = await http.get("/api/v1/users");
         const list = Array.isArray(data) ? data : (data?.content ?? []);
         setUsuarios(list);
       } catch {
@@ -90,7 +90,7 @@ export default function Admin() {
   };
   const handleDeleteUser = async (id) => {
     try {
-      await http.del(`/users/${id}`);
+      await http.del(`/api/v1/users/${id}`);
       setUsuarios((prev) => prev.filter((u) => u.id !== id));
     } catch {
       // sin cambios si falla
@@ -111,7 +111,7 @@ export default function Admin() {
         codigoPostal: payload.codigoPostal || null,
         role: payload.role || (editUsuario.role || editUsuario?.user?.role || "USER"),
       };
-      const updated = await http.put(`/users/${id}`, body);
+      const updated = await http.put(`/api/v1/users/${id}`, body);
       setUsuarios((prev) => prev.map((u) => ((u.id || u.user?.id) === id ? updated : u)));
       setEditUsuario(null);
       setShowUserModal(false);
@@ -123,8 +123,11 @@ export default function Admin() {
   
 
   return (
-    <Container fluid className="py-5">
+    <Container fluid className="py-5 text-white">
       <h2 className="text-center mb-4 fw-bold text-white">Panel de Administración</h2>
+      <p className="text-white text-center mb-4">
+        Roles disponibles (API): <strong>ADMIN</strong>, <strong>USER_AD</strong>, <strong>PROD_AD</strong>, <strong>VENDEDOR</strong>, <strong>CLIENT</strong> (alias <strong>USER</strong>)
+      </p>
 
       {/* Productos */}
       <Row className="mb-5">

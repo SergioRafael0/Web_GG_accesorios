@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { Container, Row, Col, Form, Button, Card } from "react-bootstrap";
-// import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { validarCorreo, validarRequerido } from "../utils/validaciones";
 import { login as apiLogin } from "../services/auth";
 
 export default function Login() {
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [errores, setErrores] = useState({});
 
@@ -27,7 +27,7 @@ export default function Login() {
           const result = await apiLogin(formData.email, formData.password);
           const role = result?.user?.role || "USER";
           const target = role === "ADMIN" ? "/admin" : "/";
-          window.location.replace(target);
+          navigate(target, { replace: true });
         } catch {
           setErrores({ general: "Usuario o contraseña incorrectos" });
         }

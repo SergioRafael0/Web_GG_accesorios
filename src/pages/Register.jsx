@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { Container, Row, Col, Form, Button, Card } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import { validarRequerido, validarCorreo, validarPassword, validarCoincidencia } from "../utils/validaciones";
+import { validarRequerido, validarCorreo, validarPassword, validarCoincidencia, validarTelefono, validarDireccionMinima } from "../utils/validaciones";
 import { register as apiRegister } from "../services/auth";
+import regionesComunas from "../data/ComunasRegiones.json";
 
 export default function Register() {
   const navigate = useNavigate();
@@ -14,6 +15,7 @@ export default function Register() {
     apellido: "",
     telefono: "",
     direccion: "",
+    region: "",
     ciudad: "",
     codigoPostal: "",
   });
@@ -21,7 +23,15 @@ export default function Register() {
   const [errores, setErrores] = useState({});
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    if (name === "region") {
+      setFormData((prev) => ({ ...prev, region: value, ciudad: "" }));
+    } else if (name === "codigoPostal") {
+      const v = String(value || "").replace(/\D/g, "").slice(0, 5);
+      setFormData({ ...formData, codigoPostal: v });
+    } else {
+      setFormData({ ...formData, [name]: value });
+    }
   };
 
   const handleSubmit = (e) => {
@@ -34,6 +44,9 @@ export default function Register() {
     if (!validarPassword(formData.password)) newErrors.password = "Contraseña inválida";
     if (!validarCoincidencia(formData.password, formData.confirmar))
       newErrors.confirmar = "Las contraseñas no coinciden";
+    if (formData.telefono && !validarTelefono(formData.telefono)) newErrors.telefono = "Teléfono inválido";
+    if (formData.direccion && !validarDireccionMinima(formData.direccion)) newErrors.direccion = "Dirección demasiado corta";
+    if (formData.codigoPostal && !/^\d{5}$/.test(formData.codigoPostal)) newErrors.codigoPostal = "Código postal debe tener 5 dígitos";
 
     setErrores(newErrors);
 
@@ -47,6 +60,7 @@ export default function Register() {
             apellido: formData.apellido || null,
             telefono: formData.telefono || null,
             direccion: formData.direccion || null,
+            region: formData.region || null,
             ciudad: formData.ciudad || null,
             codigoPostal: formData.codigoPostal || null,
             role: "USER",
@@ -113,6 +127,7 @@ export default function Register() {
                     onChange={handleChange}
                     className="bg-dark text-white border-secondary"
                   />
+                  {errores.telefono && <div className="text-danger small mt-1">{errores.telefono}</div>}
                 </Form.Group>
 
                 <Form.Group className="mb-3">
@@ -124,18 +139,44 @@ export default function Register() {
                     onChange={handleChange}
                     className="bg-dark text-white border-secondary"
                   />
+                  {errores.direccion && <div className="text-danger small mt-1">{errores.direccion}</div>}
                 </Form.Group>
 
-                <Form.Group className="mb-3">
-                  <Form.Label>Comuna</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="ciudad"
-                    value={formData.ciudad}
-                    onChange={handleChange}
-                    className="bg-dark text-white border-secondary"
-                  />
-                </Form.Group>
+                <Row>
+                  <Col md={6}>
+                    <Form.Group className="mb-3">
+                      <Form.Label>Región</Form.Label>
+                      <Form.Select
+                        name="region"
+                        value={formData.region}
+                        onChange={handleChange}
+                        className="bg-dark text-white border-secondary"
+                      >
+                        <option value="">Seleccione una región</option>
+                        {regionesComunas.map((r) => (
+                          <option key={r.region} value={r.region}>{r.region}</option>
+                        ))}
+                      </Form.Select>
+                    </Form.Group>
+                  </Col>
+                  <Col md={6}>
+                    <Form.Group className="mb-3">
+                      <Form.Label>Comuna</Form.Label>
+                      <Form.Select
+                        name="ciudad"
+                        value={formData.ciudad}
+                        onChange={handleChange}
+                        className="bg-dark text-white border-secondary"
+                        disabled={!formData.region}
+                      >
+                        <option value="">Seleccione una comuna</option>
+                        {formData.region && regionesComunas.find((r) => r.region === formData.region)?.comunas.map((c) => (
+                          <option key={c} value={c}>{c}</option>
+                        ))}
+                      </Form.Select>
+                    </Form.Group>
+                  </Col>
+                </Row>
 
                 <Form.Group className="mb-4">
                   <Form.Label>Código Postal</Form.Label>
@@ -144,8 +185,12 @@ export default function Register() {
                     name="codigoPostal"
                     value={formData.codigoPostal}
                     onChange={handleChange}
+                    inputMode="numeric"
+                    maxLength={5}
+                    pattern="\\d{5}"
                     className="bg-dark text-white border-secondary"
                   />
+                  {errores.codigoPostal && <div className="text-danger small mt-1">{errores.codigoPostal}</div>}
                 </Form.Group>
 
                 <Form.Group className="mb-3">

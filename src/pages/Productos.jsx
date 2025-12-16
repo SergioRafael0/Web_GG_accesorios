@@ -151,7 +151,7 @@ export default function Productos() {
         )}
       </Row>
 
-      <main className="container py-4">
+      <section className="container py-4">
         <h2>Todos los productos</h2>
         {Object.keys(byCat).map((cat) => (
           <section key={cat} id={cat} className="products-category">
@@ -163,7 +163,7 @@ export default function Productos() {
             </div>
           </section>
         ))}
-      </main>
+      </section>
     </Container>
   );
 }

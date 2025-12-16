@@ -20,6 +20,18 @@ export function validarCoincidencia(valor1, valor2) {
   return valor1 === valor2 && valor1 !== "";
 }
 
+// Validar teléfono (genérico)
+export function validarTelefono(tel) {
+  const s = String(tel || "").trim();
+  return /^\+?[\d\s()-]{7,15}$/.test(s);
+}
+
+// Validar dirección mínima
+export function validarDireccionMinima(dir) {
+  const s = String(dir || "").trim();
+  return s.length >= 5;
+}
+
 // Validar número de tarjeta (Visa, 16 dígitos + Luhn)
 export function validarTarjeta(numero) {
   const num = numero.replace(/\D/g, "");

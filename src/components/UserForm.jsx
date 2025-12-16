@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Form, Button } from "react-bootstrap";
 import { validarRequerido, validarCorreo, validarPassword } from "../utils/validaciones";
+import regionesComunas from "../data/ComunasRegiones.json";
 
 export default function UserForm({ onSubmit, initial }) {
-  const [form, setForm] = useState({ nombre: "", apellido: "", email: "", password: "", telefono: "", direccion: "", ciudad: "", codigoPostal: "", role: "USER" });
+  const [form, setForm] = useState({ nombre: "", apellido: "", email: "", password: "", telefono: "", direccion: "", region: "", ciudad: "", codigoPostal: "", role: "USER" });
   const [errores, setErrores] = useState({});
   useEffect(() => {
     if (initial) {
@@ -14,16 +15,27 @@ export default function UserForm({ onSubmit, initial }) {
         password: "",
         telefono: initial?.profile?.telefono || initial?.telefono || "",
         direccion: initial?.profile?.direccion || initial?.direccion || "",
+        region: initial?.profile?.region || initial?.region || "",
         ciudad: initial?.profile?.ciudad || initial?.ciudad || "",
         codigoPostal: initial?.profile?.codigoPostal || initial?.codigoPostal || "",
         role: initial?.role || initial?.user?.role || "USER",
       });
     } else {
-      setForm({ nombre: "", apellido: "", email: "", password: "", telefono: "", direccion: "", ciudad: "", codigoPostal: "", role: "USER" });
+      setForm({ nombre: "", apellido: "", email: "", password: "", telefono: "", direccion: "", region: "", ciudad: "", codigoPostal: "", role: "USER" });
     }
   }, [initial]);
 
-  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    if (name === "region") {
+      setForm((prev) => ({ ...prev, region: value, ciudad: "" }));
+    } else if (name === "codigoPostal") {
+      const v = String(value || "").replace(/\D/g, "").slice(0, 5);
+      setForm((prev) => ({ ...prev, codigoPostal: v }));
+    } else {
+      setForm({ ...form, [name]: value });
+    }
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -50,12 +62,13 @@ export default function UserForm({ onSubmit, initial }) {
             apellido: form.apellido || null,
             telefono: form.telefono || null,
             direccion: form.direccion || null,
+            region: form.region || null,
             ciudad: form.ciudad || null,
             codigoPostal: form.codigoPostal || null,
             role: form.role || "USER",
           };
           await onSubmit(payload);
-          setForm({ nombre: "", apellido: "", email: "", password: "", telefono: "", direccion: "", ciudad: "", codigoPostal: "", role: "USER" });
+          setForm({ nombre: "", apellido: "", email: "", password: "", telefono: "", direccion: "", region: "", ciudad: "", codigoPostal: "", role: "USER" });
         } catch {
           setErrores({ general: "No se pudo guardar el usuario" });
         }
@@ -99,20 +112,39 @@ export default function UserForm({ onSubmit, initial }) {
       </Form.Group>
 
       <Form.Group className="mb-2">
+        <Form.Label>Región</Form.Label>
+        <Form.Select name="region" value={form.region} onChange={handleChange}>
+          <option value="">Seleccione una región</option>
+          {regionesComunas.map((r) => (
+            <option key={r.region} value={r.region}>{r.region}</option>
+          ))}
+        </Form.Select>
+      </Form.Group>
+
+      <Form.Group className="mb-2">
         <Form.Label>Comuna</Form.Label>
-        <Form.Control type="text" name="ciudad" value={form.ciudad} onChange={handleChange} />
+        <Form.Select name="ciudad" value={form.ciudad} onChange={handleChange} disabled={!form.region}>
+          <option value="">Seleccione una comuna</option>
+          {form.region && regionesComunas.find((r) => r.region === form.region)?.comunas.map((c) => (
+            <option key={c} value={c}>{c}</option>
+          ))}
+        </Form.Select>
       </Form.Group>
 
       <Form.Group className="mb-2">
         <Form.Label>Código Postal</Form.Label>
-        <Form.Control type="text" name="codigoPostal" value={form.codigoPostal} onChange={handleChange} />
+        <Form.Control type="text" name="codigoPostal" value={form.codigoPostal} onChange={handleChange} inputMode="numeric" maxLength={5} pattern="\\d{5}" />
       </Form.Group>
 
       <Form.Group className="mb-3">
         <Form.Label>Rol</Form.Label>
         <Form.Select name="role" value={form.role} onChange={handleChange}>
-          <option value="USER">USER</option>
           <option value="ADMIN">ADMIN</option>
+          <option value="USER_AD">USER_AD</option>
+          <option value="PROD_AD">PROD_AD</option>
+          <option value="VENDEDOR">VENDEDOR</option>
+          <option value="CLIENT">CLIENT</option>
+          <option value="USER">USER</option>
         </Form.Select>
       </Form.Group>
 

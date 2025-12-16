@@ -35,16 +35,15 @@ export default function Home() {
 
   return (
     <div className="text-white">
-      <main>
         <section id="home" className="hero container">
           <div className="hero-grid">
             <div className="hero-text">
               <h1>GG Accesorios</h1>
               <p className="tag">Tu tienda de accesorios gaming</p>
               <HeroCarousel />
-              <a className="btn-primary" href="/productos">
+              <Link className="btn-primary" to="/productos">
                 Ver productos
-              </a>
+              </Link>
             </div>
             <div
               className="hero-media"
@@ -98,7 +97,6 @@ export default function Home() {
           <h2>Contacto</h2>
           <ContactForm />
         </section>
-      </main>
     </div>
   );
 }

@@ -6,7 +6,11 @@ async function request(path, options = {}) {
   const defaultHeaders = isFormData ? {} : { "Content-Type": "application/json" };
   const headers = { ...defaultHeaders, ...(options.headers || {}) };
   const method = (options.method || "GET").toUpperCase();
-  const isPublic = ((path.startsWith("/productos") && method === "GET")) || path.startsWith("/imagenes") || path.startsWith("/auth/");
+  const isPublic = (
+    (path.startsWith("/api/v1/productos") && method === "GET")
+    || path.startsWith("/api/v1/imagenes")
+    || path.startsWith("/api/v1/auth/")
+  );
   if (token && !isPublic) headers["Authorization"] = `Bearer ${token}`;
   try {
     const res = await fetch(`${BASE_URL}${path}`, {

@@ -1,10 +1,11 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import HeroCarousel from "../components/HeroCarousel.jsx"; // Ajusta según tu path real
 import { describe, it, expect } from "vitest";
+import { MemoryRouter } from "react-router-dom";
 
 describe("HeroCarousel", () => {
   it("renderiza correctamente los slides iniciales", () => {
-    render(<HeroCarousel />);
+    render(<MemoryRouter><HeroCarousel /></MemoryRouter>);
 
     // Tomar la primera slide usando ID
     const firstSlide = document.querySelector("#slide-0");
@@ -17,7 +18,7 @@ describe("HeroCarousel", () => {
   });
 
   it("navega al siguiente y anterior slide al hacer click", () => {
-    render(<HeroCarousel />);
+    render(<MemoryRouter><HeroCarousel /></MemoryRouter>);
     const nextBtn = screen.getByLabelText("Siguiente");
     const prevBtn = screen.getByLabelText("Anterior");
 
@@ -31,7 +32,7 @@ describe("HeroCarousel", () => {
   });
 
   it("navega a slide específico al clickear en un dot", () => {
-    render(<HeroCarousel />);
+    render(<MemoryRouter><HeroCarousel /></MemoryRouter>);
     const dot2 = document.querySelector('[data-slide="2"]');
     fireEvent.click(dot2);
     expect(document.querySelector("#slide-2").classList.contains("active")).toBe(true);

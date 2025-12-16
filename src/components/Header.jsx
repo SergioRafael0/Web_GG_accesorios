@@ -69,12 +69,19 @@ export default function Header() {
           <Nav>
             <Nav.Link as={Link} to="/">Inicio</Nav.Link>
             <Nav.Link as={Link} to="/productos">Productos</Nav.Link>
-            <Nav.Link href="#destacados">Destacados</Nav.Link>
-            <Nav.Link href="#nosotros">Nosotros</Nav.Link>
-            <Nav.Link href="#contacto">Contacto</Nav.Link>
-            {user?.role === "ADMIN" && (
-              <Nav.Link as={Link} to="/admin">Admin</Nav.Link>
-            )}
+            <Nav.Link as={Link} to="/#destacados">Destacados</Nav.Link>
+            <Nav.Link as={Link} to="/#nosotros">Nosotros</Nav.Link>
+            <Nav.Link as={Link} to="/#contacto">Contacto</Nav.Link>
+            {user ? <Nav.Link as={Link} to="/orders">Mis Órdenes</Nav.Link> : null}
+            {user && (["ADMIN","VENDEDOR"].includes(user.role)) ? (
+              <Nav.Link as={Link} to="/admin/ordenes">Órdenes</Nav.Link>
+            ) : null}
+            {user && (["ADMIN","PROD_AD"].includes(user.role)) ? (
+              <Nav.Link as={Link} to="/admin/productos">Admin Productos</Nav.Link>
+            ) : null}
+            {user && (["ADMIN","USERS_AD","USER_AD"].includes(user.role)) ? (
+              <Nav.Link as={Link} to="/admin/usuarios">Admin Usuarios</Nav.Link>
+            ) : null}
             <Nav.Link as={Link} to="/cart">
               🛒 Carrito <span className="badge bg-primary ms-1">{cartCount}</span>
             </Nav.Link>
@@ -90,6 +97,7 @@ export default function Header() {
                     {nameBottom ? <span>{nameBottom}</span> : null}
                   </span>
                 </div>
+                <Nav.Link as={Link} to="/perfil">Perfil</Nav.Link>
                 <Nav.Link
                   onClick={() => {
                     logout();
