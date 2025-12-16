@@ -238,7 +238,6 @@ export default function Checkout() {
                   onChange={handleChange}
                   inputMode="numeric"
                   maxLength={5}
-                  pattern="\\d{5}"
                   placeholder="00000"
                 />
               </Form.Group>

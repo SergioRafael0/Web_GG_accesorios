@@ -83,7 +83,7 @@ export default function ProductCard({ id, nombre, precio, imagen, descripcion, s
 
       <Card.Body className="product-body">
         <Card.Title className="fw-bold">{nombre}</Card.Title>
-        <Card.Text className="text-muted small mb-2">{descripcion}</Card.Text>
+        <div className="text-muted small mb-2" dangerouslySetInnerHTML={{ __html: descripcion }} />
         {typeof stock === "number" ? <div className="text-white-50 small mb-2">Stock: {stock}</div> : null}
 
         <div className="mt-auto">
@@ -91,11 +91,23 @@ export default function ProductCard({ id, nombre, precio, imagen, descripcion, s
 
           <div className="card-actions d-grid gap-2">
             {addedMsg ? <Alert variant="success" className="py-1 mb-2">{addedMsg}</Alert> : null}
+            <style>
+              {`
+                .btn-white-custom {
+                  color: white !important;
+                  border-color: white !important;
+                }
+                .btn-white-custom:hover {
+                  background-color: rgba(255, 255, 255, 0.2) !important;
+                  color: white !important;
+                }
+              `}
+            </style>
             <Button
               as={Link}
               to={`/productos/${id}`}
               variant="outline-light"
-              className="w-100"
+              className="w-100 btn-white-custom"
             >
               Ver detalle
             </Button>

@@ -136,7 +136,7 @@ export default function Perfil() {
             </Form.Group>
             <Form.Group className="mb-3" controlId="codigoPostal">
               <Form.Label className="text-white">Código Postal</Form.Label>
-              <Form.Control name="codigoPostal" value={form.codigoPostal} onChange={handleChange} className="bg-dark text-white border-secondary" inputMode="numeric" maxLength={5} pattern="\\d{5}" />
+              <Form.Control name="codigoPostal" value={form.codigoPostal} onChange={handleChange} className="bg-dark text-white border-secondary" inputMode="numeric" maxLength={5} />
             </Form.Group>
           </Col>
         </Row>

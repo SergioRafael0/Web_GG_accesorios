@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Navbar, Nav, Container } from "react-bootstrap";
 import { logout } from "../services/auth";
+import logo from "../assets/images/logo.png";
 
 export default function Header() {
   const [cartCount, setCartCount] = useState(0);
@@ -60,8 +61,8 @@ export default function Header() {
   return (
     <Navbar expand="lg" bg="dark" variant="dark" className="py-3 border-bottom border-secondary">
       <Container>
-        <Navbar.Brand as={Link} to="/" className="fw-bold fs-4 text-uppercase">
-          GG <span style={{ color: "#ff2d95" }}>Accesorios</span>
+        <Navbar.Brand as={Link} to="/" className="p-0 m-0">
+          <img src={logo} alt="GG Accesorios" style={{ maxHeight: "150px", width: "auto" }} />
         </Navbar.Brand>
 
         <Navbar.Toggle aria-controls="main-navbar" />
@@ -89,8 +90,8 @@ export default function Header() {
 
           <Nav className="ms-auto align-items-center">
             {user ? (
-              <div className="d-flex flex-column align-items-end ms-3 border-start border-secondary ps-3">
-                <div className="navbar-text text-white d-inline-flex align-items-center mb-1">
+              <div className="d-flex flex-row align-items-center ms-3 border-start border-secondary ps-3 gap-3">
+                <div className="navbar-text text-white d-inline-flex align-items-center mb-0">
                   <span style={{ fontSize: "1rem", marginRight: 6 }}>👤</span>
                   <span style={{ display: "inline-flex", flexDirection: "column", lineHeight: 1.1 }}>
                     <span>{nameTop}</span>

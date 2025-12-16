@@ -126,7 +126,7 @@ export default function Admin() {
     <Container fluid className="py-5 text-white">
       <h2 className="text-center mb-4 fw-bold text-white">Panel de Administración</h2>
       <p className="text-white text-center mb-4">
-        Roles disponibles (API): <strong>ADMIN</strong>, <strong>USER_AD</strong>, <strong>PROD_AD</strong>, <strong>VENDEDOR</strong>, <strong>CLIENT</strong> (alias <strong>USER</strong>)
+        Roles disponibles (API): <strong>ADMIN</strong>, <strong>USER_AD</strong>, <strong>PROD_AD</strong>, <strong>VENDEDOR</strong>, <strong>CLIENT</strong>
       </p>
 
       {/* Productos */}

@@ -187,7 +187,6 @@ export default function Register() {
                     onChange={handleChange}
                     inputMode="numeric"
                     maxLength={5}
-                    pattern="\\d{5}"
                     className="bg-dark text-white border-secondary"
                   />
                   {errores.codigoPostal && <div className="text-danger small mt-1">{errores.codigoPostal}</div>}

@@ -133,7 +133,7 @@ export default function UserForm({ onSubmit, initial }) {
 
       <Form.Group className="mb-2">
         <Form.Label>Código Postal</Form.Label>
-        <Form.Control type="text" name="codigoPostal" value={form.codigoPostal} onChange={handleChange} inputMode="numeric" maxLength={5} pattern="\\d{5}" />
+        <Form.Control type="text" name="codigoPostal" value={form.codigoPostal} onChange={handleChange} inputMode="numeric" maxLength={5} />
       </Form.Group>
 
       <Form.Group className="mb-3">
@@ -144,7 +144,6 @@ export default function UserForm({ onSubmit, initial }) {
           <option value="PROD_AD">PROD_AD</option>
           <option value="VENDEDOR">VENDEDOR</option>
           <option value="CLIENT">CLIENT</option>
-          <option value="USER">USER</option>
         </Form.Select>
       </Form.Group>
 

@@ -8,7 +8,6 @@ async function request(path, options = {}) {
   const method = (options.method || "GET").toUpperCase();
   const isPublic = (
     (path.startsWith("/api/v1/productos") && method === "GET")
-    || path.startsWith("/api/v1/imagenes")
     || path.startsWith("/api/v1/auth/")
   );
   if (token && !isPublic) headers["Authorization"] = `Bearer ${token}`;

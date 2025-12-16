@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Form, Button } from "react-bootstrap";
-// import { http } from "../services/http";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
+import { http } from "../services/http";
 import { validarRequerido } from "../utils/validaciones";
 
 export default function ProductForm({ onSubmit, initial }) {
@@ -63,14 +65,8 @@ export default function ProductForm({ onSubmit, initial }) {
       const fd = new FormData();
       fd.append("imagen", file);
       setUploadMsg("Subiendo a Cloudinary...");
-      const resp = await fetch("https://apitest-1-95ny.onrender.com/imagenes", { method: "POST", body: fd });
-      const ct = resp.headers.get("content-type") || "";
-      const data = ct.includes("application/json") ? await resp.json() : await resp.text();
-      if (!resp.ok) {
-        setUploadMsg("");
-        setErrores((prev) => ({ ...prev, imagenurl: (typeof data === "string" ? data : (data?.message || "Error al subir la imagen")) }));
-        return;
-      }
+      const data = await http.post("/api/v1/imagenes", fd);
+
       const url = typeof data === "string" ? data : (data?.url || data?.secure_url || data?.imagen || "");
       if (url) {
         const prevUrl = form.imagenurl;
@@ -81,9 +77,10 @@ export default function ProductForm({ onSubmit, initial }) {
         setUploadMsg("");
         setErrores((prev) => ({ ...prev, imagenurl: "Respuesta sin URL" }));
       }
-    } catch {
+    } catch (err) {
       setUploadMsg("");
-      setErrores((prev) => ({ ...prev, imagenurl: "No se pudo subir la imagen" }));
+      const msg = err.data?.message || (typeof err.data === "string" ? err.data : "No se pudo subir la imagen");
+      setErrores((prev) => ({ ...prev, imagenurl: msg }));
     }
   };
 

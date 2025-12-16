@@ -44,6 +44,7 @@ export default function AdminUsuarios() {
       });
       setUsuarios((prev) => [...prev, created]);
       setFeedback({ msg: "Usuario creado correctamente", variant: "success" });
+      setTimeout(() => setFeedback({ msg: "", variant: "info" }), 3000);
     } catch (e) {
       const st = e?.status || 0;
       if (st === 401) setFeedback({ msg: "Unauthorized", variant: "danger" });

@@ -65,7 +65,7 @@ export default function DetalleProducto() {
         </Col>
         <Col md={6}>
           <h2 className="fw-bold">{producto.nombre}</h2>
-          <p className="text-muted">{producto.descripcion}</p>
+          <div className="text-muted" dangerouslySetInnerHTML={{ __html: producto.descripcion }} />
           <h4 className="text-info mb-4">
             ${Number(producto.precio).toLocaleString("es-CL")}
           </h4>

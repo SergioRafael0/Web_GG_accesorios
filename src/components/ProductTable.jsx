@@ -19,7 +19,7 @@ export default function ProductTable({ productos, onDelete, onEdit }) {
         {productos.map((p) => (
           <tr key={p.id}>
             <td>{p.nombre}</td>
-            <td>{p.descripcion}</td>
+            <td><div dangerouslySetInnerHTML={{ __html: p.descripcion }} /></td>
             <td>{p.tipo}</td>
             <td>${p.precio.toLocaleString("es-CL")}</td>
             <td>{p.stock}</td>

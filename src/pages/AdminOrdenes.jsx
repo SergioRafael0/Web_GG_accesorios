@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Container, Table, Alert, Modal, Form, Button } from "react-bootstrap";
 import { listAllOrdersAdmin, updateOrderPartial } from "../services/orders";
+import regionesComunas from "../data/ComunasRegiones.json";
 
 export default function AdminOrdenes() {
   const [orders, setOrders] = useState([]);
@@ -198,19 +199,28 @@ export default function AdminOrdenes() {
             </Form.Group>
             <Form.Group className="mb-2">
               <Form.Label>Región</Form.Label>
-              <Form.Control
-                type="text"
+              <Form.Select
                 value={form.region}
-                onChange={(e) => setForm((prev) => ({ ...prev, region: e.target.value }))}
-              />
+                onChange={(e) => setForm((prev) => ({ ...prev, region: e.target.value, ciudad: "" }))}
+              >
+                <option value="">Selecciona región</option>
+                {regionesComunas.map((r) => (
+                  <option key={r.region} value={r.region}>{r.region}</option>
+                ))}
+              </Form.Select>
             </Form.Group>
             <Form.Group className="mb-2">
               <Form.Label>Ciudad</Form.Label>
-              <Form.Control
-                type="text"
+              <Form.Select
                 value={form.ciudad}
                 onChange={(e) => setForm((prev) => ({ ...prev, ciudad: e.target.value }))}
-              />
+                disabled={!form.region}
+              >
+                <option value="">Selecciona ciudad</option>
+                {form.region && regionesComunas.find((r) => r.region === form.region)?.comunas.map((c) => (
+                  <option key={c} value={c}>{c}</option>
+                ))}
+              </Form.Select>
             </Form.Group>
             <Form.Group className="mb-2">
               <Form.Label>Código Postal</Form.Label>
@@ -223,7 +233,6 @@ export default function AdminOrdenes() {
                 }}
                 inputMode="numeric"
                 maxLength={5}
-                pattern="\\d{5}"
               />
             </Form.Group>
           </Form>
