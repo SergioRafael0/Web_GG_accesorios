@@ -1,10 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 
 export default function HeroCarousel() {
   const slides = [
-    { id: 0, img: "/images/Silla_gamer_negra.webp", caption: "Silla Gamer Negra — Ergonomía y estilo" },
-    { id: 1, img: "/images/Luces_Led_escritorio.webp", caption: "Luces RGB — Control táctil" },
-    { id: 2, img: "/images/Teclado-3.webp", caption: "Teclado mecánico RGB — Personalizable y ergonómico" }
+    { id: 0, img: "/images/Silla_gamer_negra.webp", caption: "Silla Gamer Negra — Ergonomía y estilo", link: "/productos/12" },
+    { id: 1, img: "/images/Luces_Led_escritorio.webp", caption: "Monitor LG 24 — 80hz", link: "/productos/7" },
+    { id: 2, img: "/images/Teclado-3.webp", caption: "Mouse Logitech — Personalizable y ergonómico", link: "/productos/4" }
   ];
   const [current, setCurrent] = useState(0);
   const timerRef = useRef(null);
@@ -20,8 +21,10 @@ export default function HeroCarousel() {
       <div className="slides">
         {slides.map((s, i) => (
           <div key={s.id} className={`slide ${i === current ? "active" : ""}`} data-index={i} id={`slide-${i}`}>
-            <img src={s.img} alt={s.caption} onError={(e)=> e.currentTarget.src='https://picsum.photos/seed/gg'+i+'/800/450'} />
-            <div className="slide-caption">{s.caption}</div>
+            <Link to={s.link} style={{ display: 'block', width: '100%', height: '100%' }}>
+              <img src={s.img} alt={s.caption} onError={(e)=> e.currentTarget.src='https://picsum.photos/seed/gg'+i+'/800/450'} />
+              <div className="slide-caption">{s.caption}</div>
+            </Link>
           </div>
         ))}
       </div>

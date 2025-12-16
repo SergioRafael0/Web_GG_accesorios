@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import ProductCard from "../components/ProductCard";
 import HeroCarousel from "../components/HeroCarousel";
 import ContactForm from "../components/ContactForm";
@@ -49,11 +50,13 @@ export default function Home() {
               className="hero-media"
               aria-hidden="true"
             >
-              <img
-                src="/images/SinFondo4.png"
-                alt=""
-                style={{ width: "80%", borderRadius: 12, objectFit: "cover", display: "block", maxWidth: "100%", height: "auto" }}
-              />
+              <Link to="/productos/35">
+                <img
+                  src="/images/SinFondo4.png"
+                  alt="Monitor"
+                  style={{ width: "80%", borderRadius: 12, objectFit: "cover", display: "block", maxWidth: "100%", height: "auto" }}
+                />
+              </Link>
             </div>
           </div>
         </section>
